@@ -139,3 +139,42 @@
       )
     )
   )
+  
+;;
+;;  Describe All Variables Key Maps
+;;
+;; https://emacs.stackexchange.com/questions/59483/how-to-list-a-key-binding-in-any-modes
+(defun describe-all-keymaps ()
+  "Describe all keymaps in currently-defined variables."
+  (interactive)
+  (with-output-to-temp-buffer "*keymaps*"
+    (let (symbs seen)
+      (mapatoms (lambda (s)
+                  (when (and (boundp s) (keymapp (symbol-value s)))
+                    (push (indirect-variable s) symbs))))
+      (dolist (keymap symbs)
+        (unless (memq keymap seen)
+          (princ (format "* %s\n\n" keymap))
+          (princ (substitute-command-keys (format "\\{%s}" keymap)))
+          (princ (format "\f\n%s\n\n" (make-string (min 80 (window-width)) ?-)))
+          (push keymap seen))))
+    (with-current-buffer standard-output ;; temp buffer
+      (setq help-xref-stack-item (list #'my-describe-all-keymaps)))))
+	  
+;;
+  ;;  Windows Command Prompt
+  ;;
+  (defun cmd ()
+    (interactive)
+    (let ((shell-file-name "cmd.exe"))
+      (shell "*Windows Command*")))
+  
+  ;;
+  ;;  Windows Command Prompt
+  ;;
+  (defun powershell ()
+    (interactive)
+    (let ((shell-file-name "powershell.exe"))
+      (shell "*Power Shell*")))
+
+(message "Ending ~/.emacs.d/private/my-custom/func.el %s" (format-time-string "%Y-%m-%dTT"))
