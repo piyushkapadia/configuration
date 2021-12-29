@@ -1,4 +1,3 @@
-
 # importing the modules
 import sys
 import requests
@@ -10,7 +9,7 @@ n = len(sys.argv)
 if n < 2:
     # exits the program
     sys.exit("URL must be provided as argument")    
-# target url
+    # target url
 url = sys.argv[1]
 title_list = []
 

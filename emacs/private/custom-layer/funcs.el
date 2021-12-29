@@ -1,3 +1,4 @@
+(message "Ending ~/.emacs.d/private/my-custom/func.el %s" (format-time-string "%Y-%m-%dTT"))
 ;; https://lists.gnu.org/archive/html/help-gnu-emacs/2010-07/msg00291.html
 ;; https://emacs.stackexchange.com/questions/32552/how-do-i-invoke-a-non-interactive-lisp-function-interactively
 ;; https://emacs.stackexchange.com/questions/32753/call-interactive-function-from-elisp-code-without-worrying-about-arguments
@@ -9,6 +10,9 @@
 ;; https://stackoverflow.com/questions/1642184/extracting-urls-from-an-emacs-buffer
 ;; (www-get-page-title "http://www.emacswiki.org/emacs/Git")
 ;; => "EmacsWiki: Git"
+
+
+
 (defun www-get-page-title (url)
   (let ((title))
     (with-current-buffer (url-retrieve-synchronously url)
@@ -83,9 +87,9 @@
     
 
     (let ((curr (point)) ;; current position
-	  (start nil)    ;; start of org tag
-	  (end nil)      ;; end of org tags
-	  (next nil))     ;; next org tag.
+	        (start nil)    ;; start of org tag
+	        (end nil)      ;; end of org tags
+	        (next nil))     ;; next org tag.
 
       
       ;; search for the positions of our link start,
@@ -101,11 +105,10 @@
       ;; check that start < curr < end < next.
       (cond
        ((and start end next curr)
-	(< start curr end next))
+	      (< start curr end next))
        ((and start end curr)
-	(< start curr end))
+	      (< start curr end))
        (t nil)))))
-    
 
 (defun hugo-org-link-to-markdown-link ()
   "Convert an org-mode link under point to a markdown link."
@@ -122,8 +125,8 @@
 
   
   (let ((pos1 nil) ; start of org link
-	(pos2 nil) ; end of org link
-	(pos3 nil)) ; separation between url and link txt. 
+	      (pos2 nil) ; end of org link
+	      (pos3 nil)) ; separation between url and link txt. 
     (setq pos1 (search-backward "[["))
     (setq pos2 (search-forward "]]"))
     (goto-char pos1)
@@ -133,13 +136,13 @@
     (when (not (< pos1 pos3 pos2))
       (error "Link not in [[url][text]] format"))
     (let ((url (buffer-substring-no-properties (+ pos1 2) (- pos3 2)))
-	  (txt (buffer-substring-no-properties pos3 (- pos2 2))))
+	        (txt (buffer-substring-no-properties pos3 (- pos2 2))))
       (kill-region pos1 pos2)
       (insert (format "[%s](%s)" txt url))
       )
     )
   )
-  
+
 ;;
 ;;  Describe All Variables Key Maps
 ;;
@@ -160,21 +163,39 @@
           (push keymap seen))))
     (with-current-buffer standard-output ;; temp buffer
       (setq help-xref-stack-item (list #'my-describe-all-keymaps)))))
-	  
-;;
-  ;;  Windows Command Prompt
-  ;;
-  (defun cmd ()
-    (interactive)
-    (let ((shell-file-name "cmd.exe"))
-      (shell "*Windows Command*")))
-  
-  ;;
-  ;;  Windows Command Prompt
-  ;;
-  (defun powershell ()
-    (interactive)
-    (let ((shell-file-name "powershell.exe"))
-      (shell "*Power Shell*")))
 
-(message "Ending ~/.emacs.d/private/my-custom/func.el %s" (format-time-string "%Y-%m-%dTT"))
+(defun get-current-line ()
+  (buffer-substring-no-properties (line-beginning-position)
+                                  (line-end-position)))
+
+(defun run-python-command (str)
+  (shell-command-to-string
+   (concat "D:/Dev/Tools/Anaconda3/python.exe  D:\\Dev\\Home\\.emacs.d\\private\\python\\GetTitleFromUrl.py "
+           (shell-quote-argument ( str )))))
+
+(defun eval-line-in-python ()
+  "Evaluates the current line in python, then copies the result to the clipboard."
+  (interactive)
+  (let ((str (run-python-command (get-current-line))))
+    (message str)
+    (kill-new str)))
+
+
+;;
+;;  Windows Command Prompt
+;;
+(defun cmd ()
+  (interactive)
+  (let ((shell-file-name "cmd.exe"))
+    (shell "*Windows Command*")))
+
+;;
+;;  Windows Command Prompt
+;;
+(defun powershell ()
+  (interactive)
+  (let ((shell-file-name "powershell.exe"))
+    (shell "*Power Shell*")))
+
+
+(message "Ending ~/Home/.emacs.d/private/custom-layer/func.el %s" (format-time-string "%Y-%m-%dTT"))
